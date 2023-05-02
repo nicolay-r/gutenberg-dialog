@@ -1,7 +1,8 @@
 import os
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
 
-# These can also be set as arguments via the command line.
+
 class Config:
     dialog_gap = 150
     max_length = 100  # max number of words in 1 utterance (100)
@@ -20,3 +21,7 @@ class Config:
     create_dataset = False
     run_all = False
     directory = os.path.join('data', 'filtered')
+    indices_dev = os.path.join(current_dir, 'dev_indices.txt')
+    indices_train = os.path.join(current_dir, 'train_indices.txt')
+    indices_test = os.path.join(current_dir, 'test_indices.txt')
+    metadata = os.path.join(current_dir, 'metadata.txt')

@@ -3,6 +3,7 @@ import os
 import shutil
 import math
 
+from tqdm import tqdm
 from utils import utils
 
 
@@ -58,7 +59,8 @@ def pre_filter(cfg):
         filtered_books = []
 
         # Go through single books and calculate KL-divergence from total vocab.
-        for i, fname in enumerate(os.listdir(path)):
+        books_list = os.listdir(path)
+        for i, fname in tqdm(enumerate(books_list), total=len(books_list)):
             if fname not in removed_books:
                 if i > cfg.max_books:
                     break
@@ -77,9 +79,6 @@ def pre_filter(cfg):
                 kl_div = 0
                 for key, value in book_distro.items():
                     kl_div += value * math.log(value / total_distro[key])
-
-                if not i % 1000:
-                    print('Filtered ' + str(i) + ' books.')
 
                 # Let small books through because the distribution is skewed.
                 if (kl_div < cfg.kl_threshold or n_words < cfg.size_threshold):

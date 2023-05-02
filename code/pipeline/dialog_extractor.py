@@ -2,6 +2,7 @@ import os
 import importlib
 from collections import Counter
 
+from tqdm import tqdm
 from utils import utils
 
 
@@ -46,7 +47,7 @@ def extract_(cfg, directory, lang):
             # Store the dialogs before processing.
             old_dialogs = list(lang_class.dialogs)
             # Need a min. number of delimiters for further processing.
-            if num_chars / num_words * 10000 > cfg.min_delimiters:
+            if num_words > 0 and num_chars / num_words * 10000 > cfg.min_delimiters:
                 file_stats[fname] = [num_words, 0]
                 lang_class.process_file(paragraph_list, delim)
                 diff = len(lang_class.dialogs) - len(old_dialogs)
@@ -86,7 +87,7 @@ def extract(cfg):
         # Save the dialogs
         dialog_path = os.path.join(path, 'dialogs.txt')
         with open(dialog_path, 'w', encoding='utf-8') as f:
-            for ind, d in enumerate(dialogs):
+            for ind, d in tqdm(enumerate(dialogs), desc=dialog_path):
                 split_ind = []
                 # Remove too long utterances and split dialogs accordingly.
                 for i, u in enumerate(d):

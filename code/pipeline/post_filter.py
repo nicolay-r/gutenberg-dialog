@@ -3,6 +3,8 @@ import os
 import nltk
 import importlib
 
+from tqdm import tqdm
+
 
 def clean_dialogs(cfg, directory, lang):
     lang_module = importlib.import_module('languages.' + lang)
@@ -11,7 +13,7 @@ def clean_dialogs(cfg, directory, lang):
     text = []
     path = os.path.join(directory, 'dialogs.txt')
     with open(path, encoding='utf-8') as f:
-        for i, line in enumerate(f):
+        for i, line in tqdm(enumerate(f), desc=path):
             if line != '\n':
                 [book, line] = line.split('.txt:')
                 line = line.strip('\n').lower()
@@ -26,9 +28,6 @@ def clean_dialogs(cfg, directory, lang):
                 text.append(book + '.txt: ' + line)
             else:
                 text.append('')
-
-            if i % 100000 == 0:
-                print('Cleaned ' + str(i) + ' lines.')
 
     path = os.path.join(directory, 'dialogs_clean.txt')
     with open(path, 'w', encoding='utf-8') as f:

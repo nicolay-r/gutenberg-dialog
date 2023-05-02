@@ -22,10 +22,10 @@ def create(cfg):
         with open(os.path.join(path, 'indices.txt'), encoding='utf-8') as f:
             indices = [int(line.strip('\n')) for line in f]
 
-        # Read trian, dev, test indices
-        with open(os.path.join('code', 'utils', 'dev_indices.txt')) as f:
+        # Read train, dev, test indices
+        with open(cfg.indices_dev) as f:
             dev_indices = [int(line.strip('\n')) for line in f]
-        with open(os.path.join('code', 'utils', 'test_indices.txt')) as f:
+        with open(cfg.indices_test) as f:
             test_indices = [int(line.strip('\n')) for line in f]
 
         dialogs = [[]]
@@ -64,7 +64,7 @@ def create(cfg):
 
         metadata = {}
         # Read metadata first for author and title.
-        in_path = os.path.join('code', 'utils', 'metadata.txt')
+        in_path = cfg.metadata
         with open(in_path, encoding='utf-8') as f:
             for line in f:
                 [index, lang, r, author, title] = line.split('\t')
@@ -74,3 +74,4 @@ def create(cfg):
         with open(path, 'w', encoding='utf-8') as f:
             meta_list = [metadata[str(i)] + '\t' + str(i) for i in books]
             f.write('\n'.join(sorted(meta_list)))
+        print("Saved: {}".format(path))
