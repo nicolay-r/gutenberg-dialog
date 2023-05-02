@@ -43,9 +43,6 @@ def main():
                         help='Comma separated language codes ' +
                         'for which to build datasets',
                         metavar='', type=str)
-    parser.add_argument('-d', '--download', default=config.download,
-                        help='Whether to run download step',
-                        action='store_true')
     parser.add_argument('-f1', '--pre_filter', default=config.pre_filter,
                         help='Whether to run pre-filter step',
                         action='store_true')
