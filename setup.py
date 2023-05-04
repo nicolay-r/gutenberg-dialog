@@ -1,11 +1,23 @@
-import os
+from setuptools import (
+    setup,
+    find_packages,
+)
 
 
-if not os.path.exists('data'):
-    os.mkdir('data')
-if not os.path.exists('data/raw'):
-    os.mkdir('data/raw')
+def get_requirements(filenames):
+    r_total = []
+    for filename in filenames:
+        with open(filename) as f:
+            r_local = f.read().splitlines()
+            r_total.extend(r_local)
+    return r_total
 
-print('Installing requirements...')
-os.system('pip install --no-deps gutenberg')
-os.system('pip install -r requirements.txt')
+setup(
+    name='gutenberg-dialog',
+    version='0.0.1',
+    description='',
+    classifiers=[],
+    keywords='natural language processing',
+    packages=find_packages(),
+    install_requires=get_requirements(['requirements.txt']),
+)
