@@ -13,7 +13,7 @@ def get_requirements(filenames):
     return r_total
 
 setup(
-    name='gutenberg-dialog',
+    name='gutenberg_dialog',
     version='0.0.1',
     description='',
     classifiers=[],
