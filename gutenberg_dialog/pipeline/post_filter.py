@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 def clean_dialogs(cfg, directory, lang):
-    lang_module = importlib.import_module('gutenberg-dialog.languages.' + lang)
+    lang_module = importlib.import_module('gutenberg_dialog.languages.' + lang)
     lang_class = getattr(lang_module, lang.capitalize())(cfg)
 
     text = []
