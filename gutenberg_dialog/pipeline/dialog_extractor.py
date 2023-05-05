@@ -8,7 +8,7 @@ from gutenberg_dialog.utils import utils
 
 def extract_(cfg, directory, lang):
     # Import relevant file.
-    lang_module = importlib.import_module('languages.' + lang)
+    lang_module = importlib.import_module('gutenberg_dialog.languages.' + lang)
     lang_class = getattr(lang_module, lang.capitalize())(cfg)
     delimiters = lang_class.delimiters()
 
