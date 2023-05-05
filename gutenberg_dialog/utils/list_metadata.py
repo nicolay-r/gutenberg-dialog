@@ -1,4 +1,4 @@
-from gutenberg.query import get_metadata
+from gutenberg_dialog.gutenberg.query import get_metadata
 from collections import Counter
 
 authors = []

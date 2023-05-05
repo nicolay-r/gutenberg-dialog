@@ -1,7 +1,7 @@
 import re
 import unicodedata
 
-from languages.lang import Lang
+from gutenberg_dialog.languages.lang import Lang
 
 
 class It(Lang):

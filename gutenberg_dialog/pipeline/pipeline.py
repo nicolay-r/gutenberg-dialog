@@ -1,9 +1,9 @@
 import os
 
-from pipeline.pre_filter import pre_filter
-from pipeline.dialog_extractor import extract
-from pipeline.post_filter import post_filter
-from pipeline.create_dataset import create
+from gutenberg_dialog.pipeline.pre_filter import pre_filter
+from gutenberg_dialog.pipeline.dialog_extractor import extract
+from gutenberg_dialog.pipeline.post_filter import post_filter
+from gutenberg_dialog.pipeline.create_dataset import create
 
 
 class Pipeline:

@@ -1,4 +1,4 @@
-from languages.it import It
+from gutenberg_dialog.languages.it import It
 
 
 class Hu(It):

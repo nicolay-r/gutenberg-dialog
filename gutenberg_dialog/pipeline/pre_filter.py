@@ -4,7 +4,7 @@ import shutil
 import math
 
 from tqdm import tqdm
-from utils import utils
+from gutenberg_dialog.utils import utils
 
 
 def build_vocab(path, out_path):

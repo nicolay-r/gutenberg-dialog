@@ -3,7 +3,7 @@ import importlib
 from collections import Counter
 
 from tqdm import tqdm
-from utils import utils
+from gutenberg_dialog.utils import utils
 
 
 def extract_(cfg, directory, lang):

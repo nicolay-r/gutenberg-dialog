@@ -1,7 +1,7 @@
 import argparse
 
-from utils.config import Config
-from pipeline.pipeline import Pipeline
+from gutenberg_dialog.utils.config import Config
+from gutenberg_dialog.pipeline.pipeline import Pipeline
 
 
 def main():

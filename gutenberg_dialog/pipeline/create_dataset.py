@@ -1,6 +1,6 @@
 import os
 
-from utils import utils
+from gutenberg_dialog.utils import utils
 
 
 def create(cfg):
