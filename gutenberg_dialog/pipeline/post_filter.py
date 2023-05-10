@@ -16,7 +16,14 @@ def clean_dialogs(cfg, directory, lang):
     with open(path, encoding='utf-8') as f:
         for i, line in tqdm(enumerate(f), desc=path):
             if line != '\n':
-                [book_meta, line] = line.split(Dialog.META_SEPARATOR)
+
+                args = line.split(Dialog.META_SEPARATOR)
+
+                if len(args) != 2:
+                    continue
+
+                [book_meta, line] = args
+
                 book, _ = book_meta.split('.txt')
                 line = line.strip('\n').lower()
 
