@@ -89,9 +89,10 @@ class Paragraph:
     def LineTo(self):
         return self.__line_to
 
-    def extend(self, line):
+    def extend(self, line, line_ind):
+        assert(line_ind > self.__line_from)
         self.__text += line
-        self.__line_to += 1
+        self.__line_to = line_ind
 
     def num_words(self):
         return len(self.__text.split())
