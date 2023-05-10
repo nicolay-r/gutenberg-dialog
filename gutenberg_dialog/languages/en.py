@@ -28,7 +28,7 @@ class En(Lang):
                 if '_' == p.Text[0]:
                     # If max chars exceeded start new dialog.
                     if chars_since_dialog > self.cfg.dialog_gap:
-                        self.dialogs.append(Dialog(p))
+                        self.dialogs.append(Dialog(ps=[p]))
 
                     utt = ''
                     # Augment the segment so the splitting will be correct.
@@ -46,6 +46,7 @@ class En(Lang):
 
     # Extract the dialogs from one file.
     def process_file(self, paragraph_list, delimiter):
+
         if delimiter == '_':
             self.process_file_(paragraph_list)
             return
@@ -66,7 +67,7 @@ class En(Lang):
             if delimiter in p:
                 # If max chars exceeded start new dialog.
                 if chars_since_dialog > self.cfg.dialog_gap:
-                    self.dialogs.append(Dialog(p))
+                    self.dialogs.append(Dialog(ps=[p]))
 
                 utt = ''
                 # Augment the segment so the splitting will always be correct.
@@ -85,7 +86,7 @@ class En(Lang):
                             utt += segment + ' '
 
                     if good_segment:
-                        self.dialogs[-1].append_utterance(' '.join(utt.split()))
+                        self.dialogs[-1].append_utterance(utt=' '.join(utt.split()), p=p)
 
                 # Add chars after last comma.
                 if good_segment:

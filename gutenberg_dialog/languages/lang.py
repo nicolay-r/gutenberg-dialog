@@ -22,33 +22,36 @@ class Dialog:
     # of the line.
     META_SEPARATOR = 'line: '
 
-    def __init__(self, p, utts=None):
+    def __init__(self, ps, utts=None):
         """ Note: additionally establish connection with the paragraph.
         """
-        assert(isinstance(p, Paragraph))
-        self.__paragraph = p
+        assert(isinstance(ps, list))
+        self.__paragraphs = ps
         self.__utterances = [] if utts == None else utts
 
     @classmethod
     def from_existed(cls, d, ind_from, ind_to):
         assert(isinstance(d, Dialog))
-        instance = cls(d.Paragraph)
+        instance = cls(d.__paragraphs)
         instance.__utterances = d.__utterances[ind_from:ind_to]
         return instance
 
     @property
-    def Paragraph(self):
-        return self.__paragraph
+    def Paragraphs(self):
+        return self.__paragraphs
 
     @property
-    def ParagraphBounds(self):
-        return (self.__paragraph.LineFrom, self.__paragraph.LineTo)
+    def Bounds(self):
+        mn = min([p.LineFrom for p in self.__paragraphs])
+        mx = max([p.LineTo for p in self.__paragraphs])
+        return (mn, mx)
 
     def iter_utterances(self):
         return iter(self.__utterances)
 
-    def append_utterance(self, utt):
+    def append_utterance(self, utt, p):
         self.__utterances.append(utt)
+        self.__paragraphs.append(p)
 
     def __len__(self):
         return len(self.__utterances)

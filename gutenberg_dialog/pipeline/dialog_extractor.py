@@ -56,7 +56,7 @@ def extract_(cfg, directory, lang):
                 # Add fname to utterances.
                 for i, d in enumerate(lang_class.dialogs[-diff:]):
                     lang_class.dialogs[-diff + i] = Dialog(
-                        p=d.Paragraph, utts=[fname + str(d.Paragraph.DisplayBounds) + d.META_SEPARATOR + u for u in d])
+                        ps=d.Paragraphs, utts=[fname + str(d.Bounds) + d.META_SEPARATOR + u for u in d])
 
                 # Check whether there are enough dialogs in this file.
                 if diff / num_words * 10000 < cfg.min_delimiters / 10:
@@ -108,7 +108,7 @@ def extract(cfg):
                             sample.write('\n'.join(d))
                             sample.write('\n\n')
 
-                        file_stats[d.Paragraph.FileName][1] += len(d)
+                        file_stats[d.Paragraphs[0].FileName][1] += len(d)
                         dialog_lengths.append(len(d))
                         lengths.extend([len(u.split()) for u in d])
 
