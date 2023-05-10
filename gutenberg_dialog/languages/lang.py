@@ -93,7 +93,7 @@ class Paragraph:
         return self.__line_to
 
     def extend(self, line, line_ind):
-        assert(line_ind > self.__line_from)
+        assert(line_ind >= self.__line_from)
         self.__text += line
         self.__line_to = line_ind
 
