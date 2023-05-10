@@ -39,7 +39,7 @@ def extract_(cfg, directory, lang):
                     if line == '\n':
                         paragraph_list.append(Paragraph(line_ind=line_ind, file_name=fname))
                     else:
-                        paragraph_list[-1].extend(line=line.strip('\n') + ' ')
+                        paragraph_list[-1].extend(line=line.strip('\n') + ' ', line_ind=line_ind)
 
             # Try to find a delimiter with higher count than underscores.
             delim, num_chars = delimiter_counts.most_common(1)[0]
