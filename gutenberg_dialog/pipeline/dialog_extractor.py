@@ -4,6 +4,7 @@ from collections import Counter
 
 from tqdm import tqdm
 from gutenberg_dialog.utils import utils
+from gutenberg_dialog.languages.lang import Paragraph, Dialog
 
 
 def extract_(cfg, directory, lang):
@@ -25,25 +26,25 @@ def extract_(cfg, directory, lang):
             if i > cfg.max_books:
                 break
 
-            paragraph_list = ['']
+            paragraph_list = [Paragraph(line_ind=0, file_name=fname)]
             delimiter_counts = Counter(delimiters.keys())
             path = os.path.join(directory, lang, 'books', fname)
             with open(path, errors='ignore', encoding='utf-8') as f:
-                for line in f:
+                for line_ind, line in enumerate(f):
                     for delimiter, func in delimiters.items():
                         delimiter_counts[delimiter] += func(delimiter, line)
 
                     # Paragraphs are separated by new line.
                     # Usually one paragraph contains a single speaker.
                     if line == '\n':
-                        paragraph_list.append('')
+                        paragraph_list.append(Paragraph(line_ind=line_ind, file_name=fname))
                     else:
-                        paragraph_list[-1] += line.strip('\n') + ' '
+                        paragraph_list[-1].extend(line=line.strip('\n') + ' ')
 
             # Try to find a delimiter with higher count than underscores.
             delim, num_chars = delimiter_counts.most_common(1)[0]
 
-            num_words = sum([len(p.split()) for p in paragraph_list])
+            num_words = sum([p.num_words() for p in paragraph_list])
             # Store the dialogs before processing.
             old_dialogs = list(lang_class.dialogs)
             # Need a min. number of delimiters for further processing.
@@ -55,7 +56,7 @@ def extract_(cfg, directory, lang):
                 # Add fname to utterances.
                 for i, d in enumerate(lang_class.dialogs[-diff:]):
                     lang_class.dialogs[-diff + i] = [
-                        fname + ':  ' + u for u in d]
+                        fname + str(d.Paragraph.Bounds.replace(", ", "-")) + ':  ' + u for u in d]
 
                 # Check whether there are enough dialogs in this file.
                 if diff / num_words * 10000 < cfg.min_delimiters / 10:
@@ -95,7 +96,7 @@ def extract(cfg):
                         split_ind.append(i)
 
                 split_ind = zip([-1] + split_ind, split_ind + [None])
-                diags = [d[i + 1: j] for i, j in split_ind]
+                diags = [Dialog.from_existed(d, ind_from=i+1, ind_to=j) for i, j in split_ind]
 
                 for d in diags:
                     # Exclude single utterances.
@@ -107,7 +108,7 @@ def extract(cfg):
                             sample.write('\n'.join(d))
                             sample.write('\n\n')
 
-                        file_stats[d[0].split(':')[0]][1] += len(d)
+                        file_stats[d.Paragraph.FileName][1] += len(d)
                         dialog_lengths.append(len(d))
                         lengths.extend([len(u.split()) for u in d])
 

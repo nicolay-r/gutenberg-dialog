@@ -1,6 +1,6 @@
 import re
 import unicodedata
-from gutenberg_dialog.languages.lang import Lang
+from gutenberg_dialog.languages.lang import Lang, Dialog, Paragraph
 
 class De(Lang):
 
@@ -31,21 +31,21 @@ class De(Lang):
         chars_since_dialog = self.cfg.dialog_gap + 1
         for p in paragraph_list:
             # If the paragraph potentially contains dialog.
-            if len(p) > 1:
-                if delimiter in p[:2]:
+            if len(p.Text) > 1:
+                if delimiter in p.Text[:2]:
                     text = ''
-                    for segment in p.split(delimiter)[1:]:
+                    for segment in p.Text.split(delimiter)[1:]:
                         text += segment.split(De.delim_pairs[delimiter])[0]
 
                     # If max chars exceeded start new dialog.
                     if chars_since_dialog > self.cfg.dialog_gap:
-                        dialogs.append([])
+                        dialogs.append(Dialog(p))
 
-                    dialogs[-1].append(' '.join(text.split()))
+                    dialogs[-1].append_utterance(' '.join(text.split()))
                     chars_since_dialog = 0
                 else:
                     # Add the whole paragraph since there were no dialog.
-                    chars_since_dialog += len(p)
+                    chars_since_dialog += len(p.Text)
 
         self.dialogs.extend(dialogs)
 

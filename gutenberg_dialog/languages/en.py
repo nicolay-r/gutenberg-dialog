@@ -1,6 +1,6 @@
 import re
 import unicodedata
-from gutenberg_dialog.languages.lang import Lang
+from gutenberg_dialog.languages.lang import Lang, Dialog
 
 
 class En(Lang):
@@ -24,25 +24,25 @@ class En(Lang):
         chars_since_dialog = self.cfg.dialog_gap + 1
         for p in paragraph_list:
             # If the paragraph potentially contains dialog.
-            if len(p) > 1:
-                if '_' == p[0]:
+            if len(p.Text) > 1:
+                if '_' == p.Text[0]:
                     # If max chars exceeded start new dialog.
                     if chars_since_dialog > self.cfg.dialog_gap:
-                        self.dialogs.append([])
+                        self.dialogs.append(Dialog(p))
 
                     utt = ''
                     # Augment the segment so the splitting will be correct.
-                    segments = ('YXC' + p).split('_')
+                    segments = ('YXC' + p.Text).split('_')
 
                     # Join into a single utterance since we are in a paragraph.
                     if len(segments) > 2:
                         utt = ' '.join(segments[2:])
-                        self.dialogs[-1].append(' '.join(utt.split()))
+                        self.dialogs[-1].append_utterance(' '.join(utt.split()))
 
                     chars_since_dialog = 0
                 else:
                     # Add the whole paragraph since there were no dialog.
-                    chars_since_dialog += len(p)
+                    chars_since_dialog += len(p.Text)
 
     # Extract the dialogs from one file.
     def process_file(self, paragraph_list, delimiter):
@@ -52,10 +52,10 @@ class En(Lang):
 
         # We have to deal with single quatation marks.
         if delimiter == '‘':
-            paragraph_list = [p.replace('’ ', '‘ ')for p in paragraph_list]
+            paragraph_list = [p.modify_text(lambda t: t.replace('’ ', '‘ ')) for p in paragraph_list]
         # Unify the later processing.
         if delimiter == '“':
-            paragraph_list = [p.replace('”', '“')for p in paragraph_list]
+            paragraph_list = [p.modify_text(lambda t: t.replace('”', '“')) for p in paragraph_list]
 
         # After some amount of characters interpret utterance as new dialog.
         chars_since_dialog = self.cfg.dialog_gap + 1
@@ -64,11 +64,11 @@ class En(Lang):
             if delimiter in p:
                 # If max chars exceeded start new dialog.
                 if chars_since_dialog > self.cfg.dialog_gap:
-                    self.dialogs.append([])
+                    self.dialogs.append(Dialog(p))
 
                 utt = ''
                 # Augment the segment so the splitting will always be correct.
-                segments = ('YXC' + p + 'YXC').split(delimiter)
+                segments = ('YXC' + p.Text + 'YXC').split(delimiter)
 
                 good_segment = True
                 # Join into a single utterance since we are inside a paragraph.
@@ -83,7 +83,7 @@ class En(Lang):
                             utt += segment + ' '
 
                     if good_segment:
-                        self.dialogs[-1].append(' '.join(utt.split()))
+                        self.dialogs[-1].append_utterance(' '.join(utt.split()))
 
                 # Add chars after last comma.
                 if good_segment:
