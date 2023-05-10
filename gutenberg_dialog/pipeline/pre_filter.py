@@ -60,7 +60,7 @@ def pre_filter(cfg):
 
         # Go through single books and calculate KL-divergence from total vocab.
         books_list = os.listdir(path)
-        for i, fname in tqdm(enumerate(books_list), total=len(books_list)):
+        for i, fname in tqdm(enumerate(books_list), total=len(books_list), desc=path):
             if fname not in removed_books:
                 if i > cfg.max_books:
                     break
