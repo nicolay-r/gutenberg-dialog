@@ -5,6 +5,7 @@ import importlib
 
 from tqdm import tqdm
 
+from gutenberg_dialog.languages.lang import Dialog
 
 def clean_dialogs(cfg, directory, lang):
     lang_module = importlib.import_module('gutenberg_dialog.languages.' + lang)
@@ -15,7 +16,8 @@ def clean_dialogs(cfg, directory, lang):
     with open(path, encoding='utf-8') as f:
         for i, line in tqdm(enumerate(f), desc=path):
             if line != '\n':
-                [book, line] = line.split('.txt:')
+                [book_meta, line] = line.split(Dialog.META_SEPARATOR)
+                book, _ = book_meta.split('.txt')
                 line = line.strip('\n').lower()
 
                 line = lang_class.clean_line(line)

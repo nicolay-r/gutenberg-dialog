@@ -89,10 +89,10 @@ class En(Lang):
                 if good_segment:
                     chars_since_dialog = len(segments[-1]) - 3
                 else:
-                    chars_since_dialog += len(p)
+                    chars_since_dialog += len(p.Text)
             else:
                 # Otherwise add the whole paragraph since there was no dialog.
-                chars_since_dialog += len(p)
+                chars_since_dialog += len(p.Text)
 
     def clean_line(self, line):
         line = re.sub(' \' ', '\'', line)

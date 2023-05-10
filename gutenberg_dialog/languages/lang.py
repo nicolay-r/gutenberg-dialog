@@ -17,17 +17,24 @@ class Dialog:
     """ Description of the dialog.
     """
 
-    def __init__(self, p):
+    # Substring that separates the metainformation for the line
+    # related to each utterance of the dialog and the actual contents
+    # of the line.
+    META_SEPARATOR = 'line: '
+
+    def __init__(self, p, utts=None):
         """ Note: additionally establish connection with the paragraph.
         """
         assert(isinstance(p, Paragraph))
         self.__paragraph = p
-        self.__utterances = []
+        self.__utterances = [] if utts == None else utts
 
     @classmethod
     def from_existed(cls, d, ind_from, ind_to):
+        assert(isinstance(d, Dialog))
         instance = cls(d.Paragraph)
-        instance.__utterances = d[ind_from:ind_to]
+        instance.__utterances = d.__utterances[ind_from:ind_to]
+        return instance
 
     @property
     def Paragraph(self):
@@ -67,8 +74,8 @@ class Paragraph:
         return self.__file_name
 
     @property
-    def Bounds(self):
-        return (self.__line_from, self.__line_to)
+    def DisplayBounds(self):
+        return "[{}-{}]".format(self.__line_from, self.__line_to)
 
     @property
     def Text(self):
