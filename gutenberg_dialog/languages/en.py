@@ -52,10 +52,12 @@ class En(Lang):
 
         # We have to deal with single quatation marks.
         if delimiter == '‘':
-            paragraph_list = [p.modify_text(lambda t: t.replace('’ ', '‘ ')) for p in paragraph_list]
+            for p in paragraph_list:
+                p.modify_text(lambda t: t.replace('’ ', '‘ '))
         # Unify the later processing.
         if delimiter == '“':
-            paragraph_list = [p.modify_text(lambda t: t.replace('”', '“')) for p in paragraph_list]
+            for p in paragraph_list:
+                p.modify_text(lambda t: t.replace('”', '“'))
 
         # After some amount of characters interpret utterance as new dialog.
         chars_since_dialog = self.cfg.dialog_gap + 1
