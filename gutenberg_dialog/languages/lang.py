@@ -44,7 +44,7 @@ class Dialog:
     def Bounds(self):
         mn = min([p.LineFrom for p in self.__paragraphs])
         mx = max([p.LineTo for p in self.__paragraphs])
-        return (mn, mx)
+        return "({}:{})".format(mn, mx)
 
     def iter_utterances(self):
         return iter(self.__utterances)

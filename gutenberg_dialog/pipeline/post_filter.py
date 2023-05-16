@@ -8,6 +8,38 @@ from tqdm import tqdm
 from gutenberg_dialog.languages.lang import Dialog
 
 
+class Utterance:
+    """ Parsed Utterance with metainformation
+    """
+
+    def __init__(self, book, location, text):
+        self.book = book
+        self.location = location
+        self.text = text
+
+class DialogMetaHelper:
+
+    _sep = Dialog.META_SEPARATOR
+
+    @staticmethod
+    def try_parse_utterance(line):
+        """ Parsing metainformation from utterance.
+        """
+        args = line.split(DialogMetaHelper._sep)
+        if len(args) != 2:
+            return None
+        [book_meta, text] = args
+        book, dialog_location = book_meta.split('.txt')
+        return Utterance(book=book, location=dialog_location, text=text.strip('\n'))
+
+    @staticmethod
+    def serialize_uterance(utt):
+        """ combine utterance with metainformation
+        """
+        assert(isinstance(utt, Utterance))
+        return utt.book + '.txt' + utt.location + DialogMetaHelper._sep + utt.text
+
+
 def clean_dialogs(cfg, directory, lang):
     lang_module = importlib.import_module('gutenberg_dialog.languages.' + lang)
     lang_class = getattr(lang_module, lang.capitalize())(cfg)
@@ -18,15 +50,11 @@ def clean_dialogs(cfg, directory, lang):
         for i, line in tqdm(enumerate(f), desc=path):
             if line != '\n':
 
-                args = line.split(Dialog.META_SEPARATOR)
-
-                if len(args) != 2:
+                utt = DialogMetaHelper.try_parse_utterance(line)
+                if utt is None:
                     continue
 
-                [book_meta, line] = args
-
-                book, dialog_location = book_meta.split('.txt')
-                line = line.strip('\n').lower()
+                line = utt.text.lower()
 
                 line = lang_class.clean_line(line)
 
@@ -35,7 +63,7 @@ def clean_dialogs(cfg, directory, lang):
                 if len(words) == 0:
                     # Need this, so there are no empty lines.
                     line = '<PLACEHOLDER>'
-                text.append(book + '.txt:' + dialog_location + Dialog.META_SEPARATOR + line)
+                text.append(DialogMetaHelper.serialize_uterance(utt))
             else:
                 text.append('')
 
@@ -52,7 +80,10 @@ def build_vocab_dialogs(cfg, directory):
     with open(path, encoding='utf-8') as f:
         for i, line in enumerate(f):
             if line != '\n':
-                vocab.update(line.strip('\n').split('.txt: ')[1].split())
+                utt = DialogMetaHelper.try_parse_utterance(line)
+                if utt is None:
+                    continue
+                vocab.update(utt.text.split())
 
     path = os.path.join(directory, 'dialogs_vocab.txt')
     with open(path, 'w', encoding='utf-8') as f:
@@ -88,7 +119,10 @@ def post_filter(cfg):
                     dialogs.append([])
 
                 else:
-                    dialogs[-1].append(line.strip('\n').split('.txt: ')[1])
+                    utt = DialogMetaHelper.try_parse_utterance(line)
+                    if utt is None:
+                        continue
+                    dialogs[-1].append(utt.text)
 
         indices = []
         for i, d in enumerate(dialogs):
