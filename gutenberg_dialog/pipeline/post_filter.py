@@ -6,7 +6,7 @@ import importlib
 from tqdm import tqdm
 
 from gutenberg_dialog.languages.lang import Dialog
-from gutenberg_dialog.pipeline.utils import DialogMetaHelper
+from gutenberg_dialog.pipeline.utils import DialogMetaHelper, DialogSplitterLine
 
 
 def clean_dialogs(cfg, directory, lang):
@@ -17,24 +17,23 @@ def clean_dialogs(cfg, directory, lang):
     path = os.path.join(directory, 'dialogs.txt')
     with open(path, encoding='utf-8') as f:
         for i, line in tqdm(enumerate(f), desc=path):
-            if line != '\n':
+            if line != cfg.dialog_splitter_line and line != cfg.dialogs_separator:
 
                 utt = DialogMetaHelper.try_parse_utterance(line)
                 if utt is None:
                     continue
 
                 line = utt.text.lower()
-
                 line = lang_class.clean_line(line)
-
                 words = nltk.word_tokenize(line)
+
                 line = ' '.join(words)
                 if len(words) == 0:
                     # Need this, so there are no empty lines.
                     line = '<PLACEHOLDER>'
                 text.append(DialogMetaHelper.serialize_uterance(utt))
             else:
-                text.append('')
+                text.append(line.strip())
 
     path = os.path.join(directory, 'dialogs_clean.txt')
     with open(path, 'w', encoding='utf-8') as f:

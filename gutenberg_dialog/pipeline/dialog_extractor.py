@@ -99,22 +99,28 @@ def extract(cfg):
                     if len(u.split()) > cfg.max_length:
                         split_ind.append(i)
 
+                # Splitting diags according to the redefined rules.
                 split_ind = zip([-1] + split_ind, split_ind + [None])
                 diags = [Dialog.from_existed(d, ind_from=i+1, ind_to=j) for i, j in split_ind]
 
-                for d in diags:
-                    # Exclude single utterances.
-                    if len(d) > 1:
-                        f.write('\n'.join(d))
-                        f.write('\n\n')
+                # Exclude single utterances.
+                diags = [d for d in diags if len(d) > 1]
 
-                        if ind % 100 == 0:
-                            sample.write('\n'.join(d))
-                            sample.write('\n\n')
+                for i, d in enumerate(diags):
+                    f.write('\n'.join(d))
+                    f.write(('\n'+cfg.dialog_splitter_line) if i < len(diags) - 1 else '\n')
 
-                        file_stats[d.Paragraphs[0].FileName][1] += len(d)
-                        dialog_lengths.append(len(d))
-                        lengths.extend([len(u.split()) for u in d])
+                    # Collecting a reduced information in log.
+                    if ind % 100 == 0:
+                        sample.write('\n'.join(d))
+                        sample.write('\n\n')
+
+                    file_stats[d.Paragraphs[0].FileName][1] += len(d)
+                    dialog_lengths.append(len(d))
+                    lengths.extend([len(u.split()) for u in d])
+
+                if len(diags) > 0:
+                    f.write(cfg.dialogs_separator)
 
         avg_dialog_length = sum(dialog_lengths) / (len(dialog_lengths) + 1)
         print(

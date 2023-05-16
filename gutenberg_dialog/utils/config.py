@@ -25,3 +25,6 @@ class Config:
     indices_train = os.path.join(current_dir, 'train_indices.txt')
     indices_test = os.path.join(current_dir, 'test_indices.txt')
     metadata = os.path.join(current_dir, 'metadata.txt')
+    dialog_splitter_line = "~\n"   # indicates the split of the dialog
+                                   # within a one chain (sequence of paragraphs)
+    dialogs_separator = "\n"

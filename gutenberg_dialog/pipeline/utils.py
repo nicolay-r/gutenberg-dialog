@@ -1,3 +1,5 @@
+DialogSplitterLine = '~\n'
+
 class Utterance:
     """ Parsed Utterance with metainformation
     """
