@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from gutenberg_dialog.languages.lang import Dialog
 
+
 def clean_dialogs(cfg, directory, lang):
     lang_module = importlib.import_module('gutenberg_dialog.languages.' + lang)
     lang_class = getattr(lang_module, lang.capitalize())(cfg)
@@ -24,7 +25,7 @@ def clean_dialogs(cfg, directory, lang):
 
                 [book_meta, line] = args
 
-                book, _ = book_meta.split('.txt')
+                book, dialog_location = book_meta.split('.txt')
                 line = line.strip('\n').lower()
 
                 line = lang_class.clean_line(line)
@@ -34,7 +35,7 @@ def clean_dialogs(cfg, directory, lang):
                 if len(words) == 0:
                     # Need this, so there are no empty lines.
                     line = '<PLACEHOLDER>'
-                text.append(book + '.txt: ' + line)
+                text.append(book + '.txt:' + dialog_location + Dialog.META_SEPARATOR + line)
             else:
                 text.append('')
 

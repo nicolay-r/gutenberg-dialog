@@ -56,7 +56,7 @@ def extract_(cfg, directory, lang):
                 # Add fname to utterances.
                 for i, d in enumerate(lang_class.dialogs[-diff:]):
                     lang_class.dialogs[-diff + i] = Dialog(
-                        ps=d.Paragraphs, utts=[fname + str(d.Bounds) + d.META_SEPARATOR + u for u in d])
+                        ps=d.Paragraphs, utts=[fname + d.Bounds + d.META_SEPARATOR + u for u in d])
 
                 # Check whether there are enough dialogs in this file.
                 if diff / num_words * 10000 < cfg.min_delimiters / 10:
