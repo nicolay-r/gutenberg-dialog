@@ -5,6 +5,7 @@ from collections import Counter
 from tqdm import tqdm
 from gutenberg_dialog.utils import utils
 from gutenberg_dialog.languages.lang import Paragraph, Dialog
+from gutenberg_dialog.pipeline.utils import DialogMetaHelper, Utterance
 
 
 def extract_(cfg, directory, lang):
@@ -50,21 +51,24 @@ def extract_(cfg, directory, lang):
             # Need a min. number of delimiters for further processing.
             if num_words > 0 and num_chars / num_words * 10000 > cfg.min_delimiters:
                 file_stats[fname] = [num_words, 0]
+                book_id = int(fname.strip('.txt'))
                 lang_class.process_file(paragraph_list, delim)
                 diff = len(lang_class.dialogs) - len(old_dialogs)
 
                 # Add fname to utterances.
                 for i, d in enumerate(lang_class.dialogs[-diff:]):
                     lang_class.dialogs[-diff + i] = Dialog(
-                        ps=d.Paragraphs, utts=[fname + d.Bounds + d.META_SEPARATOR + u for u in d])
+                        ps=d.Paragraphs, utts=[
+                            DialogMetaHelper.serialize_uterance(Utterance(book=book_id, location=d.Bounds, text=u))
+                            for u in d])
 
                 # Check whether there are enough dialogs in this file.
                 if diff / num_words * 10000 < cfg.min_delimiters / 10:
                     lang_class.dialogs = list(old_dialogs)
-                    delimiter_filter.append(int(fname.strip('.txt')))
+                    delimiter_filter.append(book_id)
 
             else:
-                delimiter_filter.append(int(fname.strip('.txt')))
+                delimiter_filter.append(book_id)
 
     with open(os.path.join(directory, lang, 'delim.txt'), 'w') as f:
         f.write('\n'.join(list(map(str, sorted(delimiter_filter)))))

@@ -17,11 +17,6 @@ class Dialog:
     """ Description of the dialog.
     """
 
-    # Substring that separates the metainformation for the line
-    # related to each utterance of the dialog and the actual contents
-    # of the line.
-    META_SEPARATOR = 'line: '
-
     def __init__(self, ps, utts=None):
         """ Note: additionally establish connection with the paragraph.
         """
