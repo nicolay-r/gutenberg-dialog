@@ -49,9 +49,9 @@ def extract_(cfg, directory, lang):
             # Store the dialogs before processing.
             old_dialogs = list(lang_class.dialogs)
             # Need a min. number of delimiters for further processing.
+            book_id = int(fname.strip('.txt'))
             if num_words > 0 and num_chars / num_words * 10000 > cfg.min_delimiters:
                 file_stats[fname] = [num_words, 0]
-                book_id = int(fname.strip('.txt'))
                 lang_class.process_file(paragraph_list, delim)
                 diff = len(lang_class.dialogs) - len(old_dialogs)
 
