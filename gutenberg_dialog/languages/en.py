@@ -69,7 +69,7 @@ class En(Lang):
                 if chars_since_dialog > self.cfg.dialog_gap:
                     self.dialogs.append(Dialog(ps=[p]))
 
-                utt = ''
+                utt_segments = []
                 # Augment the segment so the splitting will always be correct.
                 segments = ('YXC' + p.Text + 'YXC').split(delimiter)
 
@@ -83,7 +83,9 @@ class En(Lang):
                                 good_segment = False
                                 break
                         if i % 2 == 1:
-                            utt += segment + ' '
+                            utt_segments.append(segment)
+
+                    utt = ' [USEP] '.join(utt_segments)
 
                     if good_segment:
                         self.dialogs[-1].append_utterance(utt=' '.join(utt.split()), p=p)

@@ -41,7 +41,7 @@ class De(Lang):
                     if chars_since_dialog > self.cfg.dialog_gap:
                         dialogs.append(Dialog(p))
 
-                    dialogs[-1].append_utterance(' '.join(text.split()))
+                    dialogs[-1].append_utterance(utt=' '.join(text.split()), p=p)
                     chars_since_dialog = 0
                 else:
                     # Add the whole paragraph since there were no dialog.
