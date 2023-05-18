@@ -1,5 +1,3 @@
-DialogSplitterLine = '~\n'
-
 class Utterance:
     """ Parsed Utterance with metainformation
     """
@@ -17,11 +15,11 @@ class DialogMetaHelper:
     # Substring that separates the metainformation for the line
     # related to each utterance of the dialog and the actual contents
     # of the line.
-    _sep = 'line: '
+    _sep = '[METASEP] '
 
     @staticmethod
     def try_parse_utterance(line):
-        """ Parsing metainformation from utterance.
+        """ Parsing meta-information from utterance.
         """
         args = line.split(DialogMetaHelper._sep)
         if len(args) != 2:
@@ -32,7 +30,7 @@ class DialogMetaHelper:
 
     @staticmethod
     def serialize_uterance(utt):
-        """ combine utterance with metainformation
+        """ combine utterance with meta-information
         """
         assert(isinstance(utt, Utterance))
         return str(utt.book) + '.txt' + utt.location + DialogMetaHelper._sep + utt.text

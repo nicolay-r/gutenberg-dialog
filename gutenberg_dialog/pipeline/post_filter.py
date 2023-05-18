@@ -5,8 +5,7 @@ import importlib
 
 from tqdm import tqdm
 
-from gutenberg_dialog.languages.lang import Dialog
-from gutenberg_dialog.pipeline.utils import DialogMetaHelper, DialogSplitterLine
+from gutenberg_dialog.pipeline.utils import DialogMetaHelper
 
 
 def clean_dialogs(cfg, directory, lang):
