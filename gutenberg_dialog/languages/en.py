@@ -37,7 +37,7 @@ class En(Lang):
                     # Join into a single utterance since we are in a paragraph.
                     if len(segments) > 2:
                         utt = ' '.join(segments[2:])
-                        self.dialogs[-1].append_utterance(' '.join(utt.split()))
+                        self.dialogs[-1].append_utterance(utt=' '.join(utt.split()), p=p)
 
                     chars_since_dialog = 0
                 else:
