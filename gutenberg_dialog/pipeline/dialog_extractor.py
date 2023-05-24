@@ -5,6 +5,7 @@ from collections import Counter
 from tqdm import tqdm
 from gutenberg_dialog.utils import utils
 from gutenberg_dialog.languages.lang import Paragraph, Dialog
+from gutenberg_dialog.pipeline.utils import DialogMetaHelper, Utterance
 
 
 def extract_(cfg, directory, lang):
@@ -48,6 +49,7 @@ def extract_(cfg, directory, lang):
             # Store the dialogs before processing.
             old_dialogs = list(lang_class.dialogs)
             # Need a min. number of delimiters for further processing.
+            book_id = int(fname.strip('.txt'))
             if num_words > 0 and num_chars / num_words * 10000 > cfg.min_delimiters:
                 file_stats[fname] = [num_words, 0]
                 lang_class.process_file(paragraph_list, delim)
@@ -56,15 +58,17 @@ def extract_(cfg, directory, lang):
                 # Add fname to utterances.
                 for i, d in enumerate(lang_class.dialogs[-diff:]):
                     lang_class.dialogs[-diff + i] = Dialog(
-                        ps=d.Paragraphs, utts=[fname + str(d.Bounds) + d.META_SEPARATOR + u for u in d])
+                        ps=d.Paragraphs, utts=[
+                            DialogMetaHelper.serialize_uterance(Utterance(book=book_id, location=d.Bounds, text=u))
+                            for u in d])
 
                 # Check whether there are enough dialogs in this file.
                 if diff / num_words * 10000 < cfg.min_delimiters / 10:
                     lang_class.dialogs = list(old_dialogs)
-                    delimiter_filter.append(int(fname.strip('.txt')))
+                    delimiter_filter.append(book_id)
 
             else:
-                delimiter_filter.append(int(fname.strip('.txt')))
+                delimiter_filter.append(book_id)
 
     with open(os.path.join(directory, lang, 'delim.txt'), 'w') as f:
         f.write('\n'.join(list(map(str, sorted(delimiter_filter)))))
@@ -95,22 +99,28 @@ def extract(cfg):
                     if len(u.split()) > cfg.max_length:
                         split_ind.append(i)
 
+                # Splitting diags according to the redefined rules.
                 split_ind = zip([-1] + split_ind, split_ind + [None])
                 diags = [Dialog.from_existed(d, ind_from=i+1, ind_to=j) for i, j in split_ind]
 
-                for d in diags:
-                    # Exclude single utterances.
-                    if len(d) > 1:
-                        f.write('\n'.join(d))
-                        f.write('\n\n')
+                # Exclude single utterances.
+                diags = [d for d in diags if len(d) > 1]
 
-                        if ind % 100 == 0:
-                            sample.write('\n'.join(d))
-                            sample.write('\n\n')
+                for i, d in enumerate(diags):
+                    f.write('\n'.join(d))
+                    f.write(('\n'+cfg.dialog_splitter_line) if i < len(diags) - 1 else '\n')
 
-                        file_stats[d.Paragraphs[0].FileName][1] += len(d)
-                        dialog_lengths.append(len(d))
-                        lengths.extend([len(u.split()) for u in d])
+                    # Collecting a reduced information in log.
+                    if ind % 100 == 0:
+                        sample.write('\n'.join(d))
+                        sample.write('\n\n')
+
+                    file_stats[d.Paragraphs[0].FileName][1] += len(d)
+                    dialog_lengths.append(len(d))
+                    lengths.extend([len(u.split()) for u in d])
+
+                if len(diags) > 0:
+                    f.write(cfg.dialogs_separator)
 
         avg_dialog_length = sum(dialog_lengths) / (len(dialog_lengths) + 1)
         print(
