@@ -78,6 +78,11 @@ def pre_filter(cfg):
 
                 kl_div = 0
                 for key, value in book_distro.items():
+                    # We did not specifically investigate this case, however
+                    # there might be minor cases when distros are mismatched by `key`.
+                    # Therefore to guarantee the stabiliity, we adopt this preliminary check.
+                    if key not in total_distro:
+                        continue
                     kl_div += value * math.log(value / total_distro[key])
 
                 # Let small books through because the distribution is skewed.
